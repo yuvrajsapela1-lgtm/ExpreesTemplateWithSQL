@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import userController from "./controller/userController.js";
+import userRouter from "./router/userRouter.js";
 dotenv.config();
 const app = express();
 
@@ -19,9 +19,9 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-app.use("/api/v1/user", userController);
+app.use("/api/v1/user", userRouter);
 
-//  solve html problem
+//solve html problem
 app.use((req, res, next) => {
   const err = new Error(`Can't find ${req.originalUrl} on this server`);
   err.status = 404;
