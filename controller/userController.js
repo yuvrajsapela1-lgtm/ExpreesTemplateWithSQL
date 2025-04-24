@@ -2,12 +2,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const createUser = async (req, res) => {
-  const { name, email, role, password } = req.body;
-  const user = await prisma.user.create({
-    data: { name, email, role, password },
-  });
-  res.json(user);
-};
+      const { name, email, role, password } = req.body;
+    const user = await prisma.user.create({
+      data: { name, email, role, password },
+    });
+    res.json(user);
+  };
 
 const getAllUsers = async (req, res) => {
   const users = await prisma.user.findMany();
