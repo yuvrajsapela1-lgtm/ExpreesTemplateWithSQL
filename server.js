@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import userRouter from "./router/userRouter.js";
+import authRouter from "./router/authRouter.js";
 dotenv.config();
 const app = express();
 
@@ -20,6 +21,7 @@ app.listen(port, () => {
 });
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/auth", authRouter);
 
 //solve html problem
 app.use((req, res, next) => {
