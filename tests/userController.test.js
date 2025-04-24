@@ -27,8 +27,31 @@ describe("userRouter", () => {
     const res = await request(app).get("/api/v1/user");
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
+  });
 
-    console.log("==========================================");
-    console.log(res.body);
+  it("should get a user by ID", async () => {
+    const res = await request(app).get(`/api/v1/user/${createdUserId}`);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdUserId);
+  });
+
+  it("should update a user by ID", async () => {
+    const updatedData = {
+      name: "John Updated",
+      email: "johnupdated" + Date.now() + "@example.com",
+      role: "ADMIN",
+      password: "updatedpassword123",
+    };
+    const res = await request(app)
+      .put(`/api/v1/user/${createdUserId}`)
+      .send(updatedData);
+    expect(res.body.name).toBe(updatedData.name);
+    expect(res.body.email).toBe(updatedData.email);
+  });
+
+  it("should delete a user", async () => {
+    const res = await request(app).delete(`/api/v1/user/${createdUserId}`);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("user deleted successfully");
   });
 });
