@@ -4,6 +4,8 @@ import APIResponse from "../utils/APIResponse.js";
 import APIError from "../utils/APIError.js";
 import { PrismaClient } from "@prisma/client";
 import sendEmail from "../utils/sendMail.js";
+import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 const forgetPassword = asyncHandler(async (req, res) => {
@@ -28,9 +30,6 @@ const forgetPassword = asyncHandler(async (req, res) => {
       passwordResetVerify: false,
     },
   });
-
-  console.log(`Reset code for ${email}: ${resetCode}`);
-  console.log(`Reset hased code for ${email}: ${hasedResetCode}`);
 
   const htmlMessage = `
     <!DOCTYPE html>
@@ -105,4 +104,73 @@ const forgetPassword = asyncHandler(async (req, res) => {
   );
 });
 
-export { forgetPassword };
+const verifyResetCode = asyncHandler(async (req, res) => {
+  const { email, resetCode } = req.body;
+
+  // Hash the reset code to compare with stored hash
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(resetCode)
+    .digest("hex");
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email,
+      passwordResetCode: hashedResetCode,
+      passwordResetExpires: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    throw new APIError("Invalid or expired reset code", 400);
+  }
+
+  // Mark the reset code as verified
+  await prisma.user.update({
+    where: { email },
+    data: { passwordResetVerify: true },
+  });
+
+  APIResponse.send(
+    res,
+    APIResponse.success(null, 200, "Reset code verified successfully")
+  );
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email,
+      passwordResetVerify: true,
+    },
+  });
+
+  if (!user) {
+    throw new APIError("Reset code not verified or expired", 400);
+  }
+
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  // Update password and clear reset fields
+  await prisma.user.update({
+    where: { email },
+    data: {
+      password: hashedPassword,
+      passwordResetCode: null,
+      passwordResetExpires: null,
+      passwordResetVerify: false,
+    },
+  });
+
+  APIResponse.send(
+    res,
+    APIResponse.success(null, 200, "Password reset successfully")
+  );
+});
+
+export { forgetPassword, verifyResetCode, resetPassword };
