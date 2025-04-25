@@ -1,3 +1,6 @@
-/node_modules
-/uploads
+node_modules/
 .env
+uploads/*
+!uploads/userAvatar/
+uploads/userAvatar/*
+!uploads/userAvatar/avatar.png
