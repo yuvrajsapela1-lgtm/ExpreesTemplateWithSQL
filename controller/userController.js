@@ -2,6 +2,19 @@ import { PrismaClient } from "@prisma/client";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
+import multer from "multer";
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "/uploads/userAvatar");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = "avatar-"+Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix);
+  },
+});
+
+const upload = multer({ storage: storage });
+const imageUpload = upload.single("avatar");
 
 const createUser = asyncHandler(async (req, res) => {
   const { name, email, role, password } = req.body;
@@ -72,4 +85,4 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "user deleted successfully" });
 });
 
-export { createUser, getAllUsers, getUserById, updateUser, deleteUser };
+export { imageUpload, createUser, getAllUsers, getUserById, updateUser, deleteUser };

@@ -5,12 +5,13 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  imageUpload,
 } from "../controller/userController.js";
 import { protect, authorizeRoles } from "../Middleware/authMiddleware.js";
 const router = express.Router();
 
 // Public routes
-router.post("/", protect, authorizeRoles("ADMIN"), createUser);
+router.post("/", protect, imageUpload, authorizeRoles("ADMIN"), createUser);
 
 // Protected routes (require authentication)
 router.get("/", protect, getAllUsers);
