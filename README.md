@@ -36,7 +36,8 @@ npm install
 3. Create a `.env` file in the root directory with the following variables:
 
 ```env
-DATABASE_URL="mysqk://username:password@localhost:5432/your_database"
+
+DATABASE_URL="mysql://username:password@localhost:5432/your_database"
 JWT_SECRET="your-jwt-secret"
 JWT_EXPIRES_IN="90d"
 ```
