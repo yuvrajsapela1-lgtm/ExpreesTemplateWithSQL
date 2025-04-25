@@ -1,11 +1,16 @@
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import APIResponse from "../utils/APIResponse.js";
+import APIError from "../utils/APIError.js";
 
 const prisma = new PrismaClient();
 
 const protect = async (req, res, next) => {
   let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     try {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -15,17 +20,17 @@ const protect = async (req, res, next) => {
       });
       next();
     } catch (error) {
-      return res.status(401).json({ message: "Not authorized, token failed" });
+      throw new APIError("Not authorized, token failed", 401);
     }
   } else {
-    return res.status(401).json({ message: "Not authorized, no token" });
+    throw new APIError("Not authorized, no token", 401);
   }
 };
 
 const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({ message: "Access forbidden: insufficient role" });
+      throw new APIError("Access forbidden: insufficient role", 403);
     } else {
       next();
     }

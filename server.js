@@ -28,21 +28,25 @@ app.listen(port, () => {
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
 
+// Import APIResponse utility
+import APIResponse from "./utils/APIResponse.js";
+import APIError from "./utils/APIError.js";
+
 // Handle 404s for API routes
 app.use("/api", (req, res) => {
-  res.status(404).json({
-    status: "error",
-    message: `Can't find ${req.originalUrl} on this server`,
-  });
+  APIResponse.send(
+    res,
+    APIResponse.error(`Can't find ${req.originalUrl} on this server`, 404)
+  );
 });
 
 // Handle 404s for other routes (including favicon.ico)
 app.all(/(.*)/, (req, res, next) => {
   if (req.accepts("json")) {
-    res.status(404).json({
-      status: "error",
-      message: `Can't find ${req.originalUrl} on this server`,
-    });
+    APIResponse.send(
+      res,
+      APIResponse.error(`Can't find ${req.originalUrl} on this server`, 404)
+    );
   } else {
     res.status(404).send(`Can't find ${req.originalUrl} on this server`);
   }
@@ -50,14 +54,29 @@ app.all(/(.*)/, (req, res, next) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  const statusCode = err.status || 500;
-  const message = statusCode === 500 ? "Something broke!" : err.message;
+  // Get status code and message
+  const statusCode = err.statusCode || 500;
+  const message = statusCode === 500 ? "Something went wrong!" : err.message;
 
+  // Check if error is operational (expected) or programming error
+  const isOperational = err.isOperational || false;
+
+  // Log non-operational errors for debugging
+  if (!isOperational) {
+    console.error("ERROR 💥", err);
+  }
+
+  // Send response based on accepted content type
   if (req.accepts("json")) {
-    res.status(statusCode).json({
-      status: "error",
-      message: message,
-    });
+    // Use APIResponse for consistent formatting
+    APIResponse.send(
+      res,
+      APIResponse.error(
+        message,
+        statusCode,
+        isOperational ? null : { stack: err.stack }
+      )
+    );
   } else {
     res.status(statusCode).send(message);
   }

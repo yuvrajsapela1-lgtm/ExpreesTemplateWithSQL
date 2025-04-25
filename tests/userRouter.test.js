@@ -28,7 +28,7 @@ beforeAll(async () => {
   };
 
   const res = await request(app).post("/api/v1/auth/register").send(adminUser);
-  token = res.body.token;
+  token = res.body.data.token;
 });
 
 describe("userRouter", () => {
@@ -45,10 +45,11 @@ describe("userRouter", () => {
       .set("Authorization", `Bearer ${token}`)
       .send(userData);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("id");
-    expect(res.body.avatar).toBe("avatar.png");
-    createdUserId = res.body.id;
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe("success");
+    expect(res.body.data).toHaveProperty("id");
+    expect(res.body.data.avatar).toBe("avatar.png");
+    createdUserId = res.body.data.id;
   });
 
   it("should create a new user with custom avatar", async () => {
@@ -71,9 +72,10 @@ describe("userRouter", () => {
         path.join(__dirname, "../uploads/userAvatar/avatar.png")
       );
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("id");
-    expect(res.body.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe("success");
+    expect(res.body.data).toHaveProperty("id");
+    expect(res.body.data.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
   });
 
   it("should get all users with avatar fields", async () => {
@@ -81,8 +83,9 @@ describe("userRouter", () => {
       .get("/api/v1/user")
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty("avatar");
+    expect(res.body.status).toBe("success");
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data[0]).toHaveProperty("avatar");
   });
 
   it("should get a user by ID with avatar", async () => {
@@ -90,8 +93,9 @@ describe("userRouter", () => {
       .get(`/api/v1/user/${createdUserId}`)
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(createdUserId);
-    expect(res.body).toHaveProperty("avatar");
+    expect(res.body.status).toBe("success");
+    expect(res.body.data.id).toBe(createdUserId);
+    expect(res.body.data).toHaveProperty("avatar");
   });
 
   it("should update a user with new avatar", async () => {
@@ -108,8 +112,9 @@ describe("userRouter", () => {
       );
 
     expect(res.status).toBe(200);
-    expect(res.body.name).toBe("John Updated");
-    expect(res.body.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
+    expect(res.body.status).toBe("success");
+    expect(res.body.data.name).toBe("John Updated");
+    expect(res.body.data.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
   });
 
   it("should delete a user", async () => {
@@ -117,6 +122,7 @@ describe("userRouter", () => {
       .delete(`/api/v1/user/${createdUserId}`)
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
-    expect(res.body.message).toBe("user deleted successfully");
+    expect(res.body.status).toBe("success");
+    expect(res.body.data.message).toBe("User deleted successfully");
   });
 });
