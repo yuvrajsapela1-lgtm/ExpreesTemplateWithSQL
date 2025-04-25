@@ -5,30 +5,35 @@ A robust, production-ready Express.js starter template with MySQL integration us
 ## ✨ Features
 
 - **🔐 User Authentication**
+
   - JWT-based secure authentication
   - Role-based authorization (User/Admin)
   - Protected routes with middleware
   - Session management with cookies
 
 - **📧 Email Integration**
+
   - Gmail SMTP integration
   - Beautiful HTML email templates
   - Secure password reset workflow
   - Transactional email support
 
 - **📁 File Management**
+
   - User avatar uploads
   - Secure file storage
   - Automatic file cleanup
   - Default avatar support
 
 - **🛡️ Security**
+
   - Role-based access control (RBAC)
   - Input validation
   - Password hashing with bcrypt
   - Secure reset code generation
 
 - **💾 Database**
+
   - MySQL with Prisma ORM
   - Automated migrations
   - Type-safe database queries
@@ -44,7 +49,7 @@ A robust, production-ready Express.js starter template with MySQL integration us
 
 ```
 ├── config/               # Configuration files
-├── controller/          
+├── controller/
 │   ├── authController.js    # Authentication logic
 │   ├── userController.js    # User management
 │   └── forgetPasswordController.js
@@ -78,7 +83,7 @@ A robust, production-ready Express.js starter template with MySQL integration us
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/mrXrobot26/ExpreesTemplateWithSQL>
 cd ExpreesTemplateWithSQL
 ```
 
@@ -129,37 +134,37 @@ Your API will be available at `http://localhost:3000/api/v1`
 
 ### Authentication
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|--------------|
-| POST | `/api/v1/auth/register` | Register a new user | No |
-| POST | `/api/v1/auth/login` | User login | No |
-| GET | `/api/v1/auth/logout` | User logout | Yes |
+| Method | Endpoint                | Description         | Auth Required |
+| ------ | ----------------------- | ------------------- | ------------- |
+| POST   | `/api/v1/auth/register` | Register a new user | No            |
+| POST   | `/api/v1/auth/login`    | User login          | No            |
 
 ### Password Management
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|--------------|
-| POST | `/api/v1/forget-password` | Request password reset | No |
-| POST | `/api/v1/forget-password/verify-code` | Verify reset code | No |
-| POST | `/api/v1/forget-password/reset-password` | Set new password | No |
+| Method | Endpoint                                 | Description            | Auth Required |
+| ------ | ---------------------------------------- | ---------------------- | ------------- |
+| POST   | `/api/v1/forget-password`                | Request password reset | No            |
+| POST   | `/api/v1/forget-password/verify-code`    | Verify reset code      | No            |
+| POST   | `/api/v1/forget-password/reset-password` | Set new password       | No            |
 
 ### User Management
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|--------------|
-| GET | `/api/v1/users` | Get all users | Admin |
-| GET | `/api/v1/users/:id` | Get user by ID | Yes* |
-| PUT | `/api/v1/users/:id` | Update user | Yes* |
-| DELETE | `/api/v1/users/:id` | Delete user | Yes* |
-| PATCH | `/api/v1/users/:id/avatar` | Update user avatar | Yes* |
+| Method | Endpoint                   | Description        | Auth Required |
+| ------ | -------------------------- | ------------------ | ------------- |
+| GET    | `/api/v1/users`            | Get all users      | Admin         |
+| GET    | `/api/v1/users/:id`        | Get user by ID     | Yes\*         |
+| PUT    | `/api/v1/users/:id`        | Update user        | Yes\*         |
+| DELETE | `/api/v1/users/:id`        | Delete user        | Yes\*         |
+| PATCH  | `/api/v1/users/:id/avatar` | Update user avatar | Yes\*         |
 
-_* Users can only access their own resources unless they have admin privileges_
+_\* Users can only access their own resources unless they have admin privileges_
 
 ## 🔒 Authentication Flow
 
 ### Registration
 
 1. Client sends POST request to `/api/v1/auth/register` with:
+
    ```json
    {
      "name": "John Doe",
@@ -175,6 +180,7 @@ _* Users can only access their own resources unless they have admin privileges_
 ### Login
 
 1. Client sends POST request to `/api/v1/auth/login` with:
+
    ```json
    {
      "email": "john@example.com",
@@ -188,6 +194,7 @@ _* Users can only access their own resources unless they have admin privileges_
 ### Password Reset Flow
 
 1. Request reset code:
+
    ```json
    POST /api/v1/forget-password
    {
@@ -196,6 +203,7 @@ _* Users can only access their own resources unless they have admin privileges_
    ```
 
 2. Verify reset code:
+
    ```json
    POST /api/v1/forget-password/verify-code
    {
@@ -227,12 +235,12 @@ _* Users can only access their own resources unless they have admin privileges_
 
 The system includes pre-built HTML email templates for:
 - Password reset codes
-- Welcome emails
-- Account notifications
+
 
 ## 🗃️ Database Schema
 
 ### User Model
+
 ```prisma
 model User {
   id                   Int       @id @default(autoincrement())
