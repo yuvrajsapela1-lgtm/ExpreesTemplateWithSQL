@@ -3,6 +3,12 @@ import express from "express";
 import userRouter from "../router/userRouter.js";
 import authRouter from "../router/authRouter.js";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 
 const app = express();
@@ -26,7 +32,7 @@ beforeAll(async () => {
 });
 
 describe("userRouter", () => {
-  it("should create a new user", async () => {
+  it("should create a new user with default avatar", async () => {
     const userData = {
       name: "John Doe",
       email: `john${Date.now()}@example.com`,
@@ -41,40 +47,69 @@ describe("userRouter", () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("id");
+    expect(res.body.avatar).toBe("avatar.png");
     createdUserId = res.body.id;
   });
 
-  it("should get all users", async () => {
+  it("should create a new user with custom avatar", async () => {
+    const userData = {
+      name: "Jane Doe",
+      email: `jane${Date.now()}@example.com`,
+      role: "USER",
+      password: "securepassword123",
+    };
+
+    const res = await request(app)
+      .post("/api/v1/user")
+      .set("Authorization", `Bearer ${token}`)
+      .field("name", userData.name)
+      .field("email", userData.email)
+      .field("role", userData.role)
+      .field("password", userData.password)
+      .attach(
+        "avatar",
+        path.join(__dirname, "../uploads/userAvatar/avatar.png")
+      );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("id");
+    expect(res.body.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
+  });
+
+  it("should get all users with avatar fields", async () => {
     const res = await request(app)
       .get("/api/v1/user")
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty("avatar");
   });
 
-  it("should get a user by ID", async () => {
+  it("should get a user by ID with avatar", async () => {
     const res = await request(app)
       .get(`/api/v1/user/${createdUserId}`)
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.id).toBe(createdUserId);
+    expect(res.body).toHaveProperty("avatar");
   });
 
-  it("should update a user by ID", async () => {
-    const updatedData = {
-      name: "John Updated",
-      email: `updated${Date.now()}@example.com`,
-      role: "ADMIN",
-      password: "newPassword123",
-    };
-
+  it("should update a user with new avatar", async () => {
     const res = await request(app)
       .put(`/api/v1/user/${createdUserId}`)
       .set("Authorization", `Bearer ${token}`)
-      .send(updatedData);
+      .field("name", "John Updated")
+      .field("email", `updated${Date.now()}@example.com`)
+      .field("role", "ADMIN")
+      .field("password", "newPassword123")
+      .attach(
+        "avatar",
+        path.join(__dirname, "../uploads/userAvatar/avatar.png")
+      );
 
     expect(res.status).toBe(200);
-    expect(res.body.name).toBe(updatedData.name);
+    expect(res.body.name).toBe("John Updated");
+    expect(res.body.avatar).toMatch(/^avatar-.*\.(jpeg|jpg|png)$/);
   });
 
   it("should delete a user", async () => {

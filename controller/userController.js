@@ -3,22 +3,32 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 import multer from "multer";
+import { v4 as uuid } from "uuid";
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/uploads/userAvatar");
+    cb(null, "uploads/userAvatar");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = "avatar-"+Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
+    const ext = file.mimetype.split("/")[1];
+    const name = `avatar-${uuid()}-${Date.now()}.${ext}`;
+    cb(null, name);
   },
 });
-
-const upload = multer({ storage: storage });
+const multerFilter = function (_, file, cb) {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"), false);
+  }
+};
+const upload = multer({ storage: storage, fileFilter: multerFilter });
 const imageUpload = upload.single("avatar");
 
 const createUser = asyncHandler(async (req, res) => {
   const { name, email, role, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 12);
+  const avatar = req.file ? req.file.filename : "avatar.png";
 
   const user = await prisma.user.create({
     data: {
@@ -26,6 +36,7 @@ const createUser = asyncHandler(async (req, res) => {
       email,
       role,
       password: hashedPassword,
+      avatar,
     },
   });
 
@@ -40,6 +51,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
       name: true,
       email: true,
       role: true,
+      avatar: true,
       password: false,
     },
   });
@@ -54,6 +66,7 @@ const getUserById = asyncHandler(async (req, res) => {
       name: true,
       email: true,
       role: true,
+      avatar: true,
       password: false,
     },
   });
@@ -62,8 +75,11 @@ const getUserById = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
   const data = { ...req.body };
-
   if (data.password) data.password = await bcrypt.hash(data.password, 12);
+  if (req.file) {
+    data.avatar = req.file.filename;
+  }
+
   const user = await prisma.user.update({
     where: { id: Number(req.params.id) },
     data,
@@ -72,6 +88,7 @@ const updateUser = asyncHandler(async (req, res) => {
       name: true,
       email: true,
       role: true,
+      avatar: true,
       password: false,
     },
   });
@@ -85,4 +102,11 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "user deleted successfully" });
 });
 
-export { imageUpload, createUser, getAllUsers, getUserById, updateUser, deleteUser };
+export {
+  imageUpload,
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+};
