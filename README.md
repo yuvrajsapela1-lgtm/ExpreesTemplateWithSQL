@@ -16,14 +16,14 @@ A robust Express.js template project with SQL database integration using Prisma 
 
 - Node.js (v14 or higher)
 - npm or yarn
-- PostgreSQL database
+- mySQL database
 
 ## Installation
 
 1. Clone the repository:
 
 ```bash
-git clone [your-repository-url]
+git clone [https://github.com/mrXrobot26/ExpreesTemplateWithSQL]
 cd ExpreesTemplateWithSQL
 ```
 
