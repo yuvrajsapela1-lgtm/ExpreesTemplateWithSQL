@@ -1,139 +1,151 @@
-# Express.js Template with SQL (Prisma)
+# Express.js Template with MySQL and Authentication
 
-A robust Express.js template project with SQL database integration using Prisma ORM, featuring user authentication, role-based authorization, and file upload capabilities.
+A robust Express.js starter template with MySQL integration using Prisma ORM, featuring user authentication, email functionality, and file uploads.
 
 ## Features
 
-- 🔐 User Authentication with JWT
-- 👥 Role-based Authorization (Admin/User)
-- 📦 Prisma ORM for database management
-- 🖼️ File Upload support for user avatars
-- ✨ Async error handling
-- 🧪 Jest testing setup
-- 🔒 Secure password hashing with bcrypt
-
-## Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-- mySQL database
-
-## Installation
-
-1. Clone the repository:
-
-```bash
-git clone [https://github.com/mrXrobot26/ExpreesTemplateWithSQL]
-cd ExpreesTemplateWithSQL
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Create a `.env` file in the root directory with the following variables:
-
-```env
-
-DATABASE_URL="mysql://username:password@localhost:5432/your_database"
-JWT_SECRET="your-jwt-secret"
-JWT_EXPIRES_IN="90d"
-```
-
-4. Set up the database:
-
-```bash
-npx prisma migrate dev
-```
+- 🔐 User Authentication (JWT)
+- 📧 Email Integration (Password Reset)
+- 📁 File Upload Support
+- 🎯 Role-Based Access Control
+- 🗃️ MySQL Database with Prisma ORM
+- ✅ Input Validation
+- 🔄 Password Reset Flow
+- 👤 User Avatar Management
+- 🧪 Jest Testing Setup
 
 ## Project Structure
 
 ```
-├── config/           # Configuration files
-├── controller/       # Route controllers
-│   ├── authController.js
-│   └── userController.js
-├── Middleware/       # Custom middleware
-│   └── authMiddleware.js
-├── prisma/          # Prisma schema and migrations
-├── router/          # Route definitions
+├── config/               # Configuration files
+├── controller/
+│   ├── authController.js    # Authentication logic
+│   ├── userController.js    # User management
+│   └── forgetPasswordController.js
+├── Middleware/
+│   ├── authMiddleware.js    # JWT authentication
+│   └── validationMiddleware.js
+├── prisma/
+│   ├── schema.prisma        # Database schema
+│   └── migrations/         # Database migrations
+├── router/
 │   ├── authRouter.js
-│   └── userRouter.js
-├── tests/           # Test files
-├── uploads/         # File upload directory
-└── server.js        # Application entry point
+│   ├── userRouter.js
+│   └── forgetPasswordRouter.js
+├── utils/
+│   ├── APIError.js         # Error handling
+│   ├── APIResponse.js      # Response formatting
+│   └── sendMail.js        # Email utility
+└── uploads/              # File upload directory
 ```
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- MySQL Server
+- npm or yarn
+
+## Getting Started
+
+1. Clone the repository:
+   \`\`\`bash
+   git clone <your-repo-url>
+   cd ExpreesTemplateWithSQL
+   \`\`\`
+
+2. Install dependencies:
+   \`\`\`bash
+   npm install
+   \`\`\`
+
+3. Create a \`.env\` file in the root directory with the following content:
+   \`\`\`env
+
+# Application
+
+NODE_ENV=development
+PORT=3000
+
+# Database
+
+DATABASE_URL="mysql://username:password@localhost:3306/your_database"
+
+# Authentication
+
+JWT_SECRET=your_jwt_secret_key
+
+# Email Configuration (Gmail)
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_specific_password
+\`\`\`
+
+4. Run database migrations:
+   \`\`\`bash
+   npx prisma migrate dev
+   \`\`\`
+
+5. Start the server:
+   \`\`\`bash
+   npm run dev
+   \`\`\`
 
 ## API Endpoints
 
 ### Authentication
 
-- `POST /api/v1/auth/register` - Register a new user
-- `POST /api/v1/auth/login` - Login user
+- \`POST /api/v1/auth/register\` - Register a new user
+- \`POST /api/v1/auth/login\` - User login
+- \`GET /api/v1/auth/logout\` - User logout
 
-### User Management (Protected Routes)
+### Password Reset
 
-- `GET /api/v1/user` - Get all users
-- `GET /api/v1/user/:id` - Get user by ID
-- `POST /api/v1/user` - Create new user (Admin only)
-- `PUT /api/v1/user/:id` - Update user (Admin only)
-- `DELETE /api/v1/user/:id` - Delete user (Admin only)
+- \`POST /api/v1/forget-password\` - Request password reset
+- \`POST /api/v1/forget-password/verify-code\` - Verify reset code
+- \`POST /api/v1/forget-password/reset-password\` - Set new password
 
-## Running the Application
+### User Management
 
-Development mode:
+- \`GET /api/v1/users\` - Get all users (Admin only)
+- \`GET /api/v1/users/:id\` - Get user by ID
+- \`PUT /api/v1/users/:id\` - Update user
+- \`DELETE /api/v1/users/:id\` - Delete user
+- \`PATCH /api/v1/users/:id/avatar\` - Update user avatar
 
-```bash
-npm run dev
-```
+## Environment Variables
 
-Production mode:
+Here's a detailed explanation of the required environment variables:
 
-```bash
-npm start
-```
+| Variable       | Description             | Example                             |
+| -------------- | ----------------------- | ----------------------------------- |
+| NODE_ENV       | Application environment | development                         |
+| PORT           | Server port number      | 3000                                |
+| DATABASE_URL   | MySQL connection URL    | mysql://user:pass@localhost:3306/db |
+| JWT_SECRET     | Secret key for JWT      | someRandomSecureString              |
+| EMAIL_HOST     | SMTP server host        | smtp.gmail.com                      |
+| EMAIL_PORT     | SMTP server port        | 587                                 |
+| EMAIL_USER     | SMTP email address      | your@gmail.com                      |
+| EMAIL_PASSWORD | SMTP app password       | 16-character-app-password           |
 
-Run tests:
+## Email Setup (Gmail)
 
-```bash
-npm test
-```
+To use Gmail for sending emails:
 
-## Security Features
-
-- Password hashing using bcrypt
-- JWT-based authentication
-- Role-based access control
-- File upload filtering
-- Async error handling
-
-## File Upload
-
-The application supports avatar image uploads for users:
-
-- Supported formats: Images only (JPEG, PNG, etc.)
-- Files are stored in: `/uploads/userAvatar/`
-- Default avatar: `avatar.png`
-
-## Error Handling
-
-The application includes comprehensive error handling:
-
-- Async/await error wrapper
-- Custom error responses
-- Validation error handling
-- File upload error handling
+1. Enable 2-Step Verification in your Google Account
+2. Generate an App Password:
+   - Go to Google Account Settings
+   - Security > 2-Step Verification > App passwords
+   - Generate a new app password for "Mail"
+3. Use the generated password in EMAIL_PASSWORD
 
 ## Testing
 
-Tests are written using Jest and Supertest:
-
-- User management tests
-- Authentication tests
-- File upload tests
-- Role-based access control tests
+Run tests using:
+\`\`\`bash
+npm test
+\`\`\`
 
 ## Contributing
 
