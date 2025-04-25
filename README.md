@@ -1,24 +1,50 @@
-# Express.js Template with MySQL and Authentication
+# 🚀 Express.js Template with MySQL and Authentication
 
-A robust Express.js starter template with MySQL integration using Prisma ORM, featuring user authentication, email functionality, and file uploads.
+A robust, production-ready Express.js starter template with MySQL integration using Prisma ORM, featuring comprehensive user authentication, email functionality, and file upload capabilities.
 
-## Features
+## ✨ Features
 
-- 🔐 User Authentication (JWT)
-- 📧 Email Integration (Password Reset)
-- 📁 File Upload Support
-- 🎯 Role-Based Access Control
-- 🗃️ MySQL Database with Prisma ORM
-- ✅ Input Validation
-- 🔄 Password Reset Flow
-- 👤 User Avatar Management
-- 🧪 Jest Testing Setup
+- **🔐 User Authentication**
+  - JWT-based secure authentication
+  - Role-based authorization (User/Admin)
+  - Protected routes with middleware
+  - Session management with cookies
 
-## Project Structure
+- **📧 Email Integration**
+  - Gmail SMTP integration
+  - Beautiful HTML email templates
+  - Secure password reset workflow
+  - Transactional email support
+
+- **📁 File Management**
+  - User avatar uploads
+  - Secure file storage
+  - Automatic file cleanup
+  - Default avatar support
+
+- **🛡️ Security**
+  - Role-based access control (RBAC)
+  - Input validation
+  - Password hashing with bcrypt
+  - Secure reset code generation
+
+- **💾 Database**
+  - MySQL with Prisma ORM
+  - Automated migrations
+  - Type-safe database queries
+  - Efficient connection pooling
+
+- **⚙️ Development Tools**
+  - Jest testing setup
+  - Environment configuration
+  - API error handling
+  - Standardized response format
+
+## 📂 Project Structure
 
 ```
 ├── config/               # Configuration files
-├── controller/
+├── controller/          
 │   ├── authController.js    # Authentication logic
 │   ├── userController.js    # User management
 │   └── forgetPasswordController.js
@@ -36,125 +62,215 @@ A robust Express.js starter template with MySQL integration using Prisma ORM, fe
 │   ├── APIError.js         # Error handling
 │   ├── APIResponse.js      # Response formatting
 │   └── sendMail.js        # Email utility
-└── uploads/              # File upload directory
+├── uploads/
+│   └── userAvatar/        # User avatar storage
+└── tests/                # Jest test files
 ```
 
-## Prerequisites
+## 🔧 Prerequisites
 
 - Node.js (v14 or higher)
-- MySQL Server
+- MySQL Server (v5.7 or higher)
 - npm or yarn
 
-## Getting Started
+## 🚀 Getting Started
 
-1. Clone the repository:
-   \`\`\`bash
-   git clone <your-repo-url>
-   cd ExpreesTemplateWithSQL
-   \`\`\`
+### 1. Clone the repository
 
-2. Install dependencies:
-   \`\`\`bash
-   npm install
-   \`\`\`
+```bash
+git clone <your-repo-url>
+cd ExpreesTemplateWithSQL
+```
 
-3. Create a \`.env\` file in the root directory with the following content:
-   \`\`\`env
+### 2. Install dependencies
 
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the root directory:
+
+```env
 # Application
-
 NODE_ENV=development
 PORT=3000
 
 # Database
-
 DATABASE_URL="mysql://username:password@localhost:3306/your_database"
 
 # Authentication
-
 JWT_SECRET=your_jwt_secret_key
 
 # Email Configuration (Gmail)
-
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASSWORD=your_app_specific_password
-\`\`\`
+```
 
-4. Run database migrations:
-   \`\`\`bash
-   npx prisma migrate dev
-   \`\`\`
+### 4. Set up the database
 
-5. Start the server:
-   \`\`\`bash
-   npm run dev
-   \`\`\`
+```bash
+# Create database tables
+npx prisma migrate dev
+```
 
-## API Endpoints
+### 5. Start the development server
+
+```bash
+npm run dev
+```
+
+Your API will be available at `http://localhost:3000/api/v1`
+
+## 📡 API Endpoints
 
 ### Authentication
 
-- \`POST /api/v1/auth/register\` - Register a new user
-- \`POST /api/v1/auth/login\` - User login
-- \`GET /api/v1/auth/logout\` - User logout
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|--------------|
+| POST | `/api/v1/auth/register` | Register a new user | No |
+| POST | `/api/v1/auth/login` | User login | No |
+| GET | `/api/v1/auth/logout` | User logout | Yes |
 
-### Password Reset
+### Password Management
 
-- \`POST /api/v1/forget-password\` - Request password reset
-- \`POST /api/v1/forget-password/verify-code\` - Verify reset code
-- \`POST /api/v1/forget-password/reset-password\` - Set new password
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|--------------|
+| POST | `/api/v1/forget-password` | Request password reset | No |
+| POST | `/api/v1/forget-password/verify-code` | Verify reset code | No |
+| POST | `/api/v1/forget-password/reset-password` | Set new password | No |
 
 ### User Management
 
-- \`GET /api/v1/users\` - Get all users (Admin only)
-- \`GET /api/v1/users/:id\` - Get user by ID
-- \`PUT /api/v1/users/:id\` - Update user
-- \`DELETE /api/v1/users/:id\` - Delete user
-- \`PATCH /api/v1/users/:id/avatar\` - Update user avatar
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|--------------|
+| GET | `/api/v1/users` | Get all users | Admin |
+| GET | `/api/v1/users/:id` | Get user by ID | Yes* |
+| PUT | `/api/v1/users/:id` | Update user | Yes* |
+| DELETE | `/api/v1/users/:id` | Delete user | Yes* |
+| PATCH | `/api/v1/users/:id/avatar` | Update user avatar | Yes* |
 
-## Environment Variables
+_* Users can only access their own resources unless they have admin privileges_
 
-Here's a detailed explanation of the required environment variables:
+## 🔒 Authentication Flow
 
-| Variable       | Description             | Example                             |
-| -------------- | ----------------------- | ----------------------------------- |
-| NODE_ENV       | Application environment | development                         |
-| PORT           | Server port number      | 3000                                |
-| DATABASE_URL   | MySQL connection URL    | mysql://user:pass@localhost:3306/db |
-| JWT_SECRET     | Secret key for JWT      | someRandomSecureString              |
-| EMAIL_HOST     | SMTP server host        | smtp.gmail.com                      |
-| EMAIL_PORT     | SMTP server port        | 587                                 |
-| EMAIL_USER     | SMTP email address      | your@gmail.com                      |
-| EMAIL_PASSWORD | SMTP app password       | 16-character-app-password           |
+### Registration
 
-## Email Setup (Gmail)
+1. Client sends POST request to `/api/v1/auth/register` with:
+   ```json
+   {
+     "name": "John Doe",
+     "email": "john@example.com",
+     "password": "securePassword123",
+     "passwordConfirm": "securePassword123"
+   }
+   ```
 
-To use Gmail for sending emails:
+2. Server validates input, hashes password, and creates user
+3. Server returns JWT token and user data
+
+### Login
+
+1. Client sends POST request to `/api/v1/auth/login` with:
+   ```json
+   {
+     "email": "john@example.com",
+     "password": "securePassword123"
+   }
+   ```
+
+2. Server validates credentials and issues JWT token
+3. Token is returned in response and set as HTTP-only cookie
+
+### Password Reset Flow
+
+1. Request reset code:
+   ```json
+   POST /api/v1/forget-password
+   {
+     "email": "user@example.com"
+   }
+   ```
+
+2. Verify reset code:
+   ```json
+   POST /api/v1/forget-password/verify-code
+   {
+     "email": "user@example.com",
+     "resetCode": "123456"
+   }
+   ```
+
+3. Set new password:
+   ```json
+   POST /api/v1/forget-password/reset-password
+   {
+     "email": "user@example.com",
+     "newPassword": "newSecurePassword123"
+   }
+   ```
+
+## 📧 Email Setup
+
+### Using Gmail
 
 1. Enable 2-Step Verification in your Google Account
 2. Generate an App Password:
-   - Go to Google Account Settings
-   - Security > 2-Step Verification > App passwords
-   - Generate a new app password for "Mail"
-3. Use the generated password in EMAIL_PASSWORD
+   - Go to Google Account Settings → Security → 2-Step Verification → App passwords
+   - Select "Mail" and "Other" (name it "Express App")
+   - Use the 16-character password in your `.env` file
 
-## Testing
+### HTML Email Templates
 
-Run tests using:
-\`\`\`bash
+The system includes pre-built HTML email templates for:
+- Password reset codes
+- Welcome emails
+- Account notifications
+
+## 🗃️ Database Schema
+
+### User Model
+```prisma
+model User {
+  id                   Int       @id @default(autoincrement())
+  createdAt            DateTime  @default(now())
+  email                String    @unique
+  name                 String?
+  role                 Role      @default(USER)
+  password             String
+  avatar               String    @default("avatar.png")
+  passwordResetCode    String?
+  passwordResetExpires DateTime?
+  passwordResetVerify  Boolean   @default(false)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
 npm test
-\`\`\`
 
-## Contributing
+# Run specific test suite
+npm test -- --testPathPattern=auth
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
