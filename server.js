@@ -3,6 +3,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import userRouter from "./router/userRouter.js";
 import authRouter from "./router/authRouter.js";
+import forgetPasswordRouter from "./router/forgetPasswordRouter.js";
 import path from "path";
 import { fileURLToPath } from "url";
 dotenv.config();
@@ -27,6 +28,7 @@ app.listen(port, () => {
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/forget-password", forgetPasswordRouter);
 
 // Import APIResponse utility
 import APIResponse from "./utils/APIResponse.js";

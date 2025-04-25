@@ -9,13 +9,16 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  name      String?
-  role      Role     @default(USER)
-  password  String
-  avatar    String   @default("avatar.png")
+  id                   Int       @id @default(autoincrement())
+  createdAt            DateTime  @default(now())
+  email                String    @unique
+  name                 String?
+  role                 Role      @default(USER)
+  password             String
+  avatar               String    @default("avatar.png")
+  passwordResetCode    String?
+  passwordResetExpires DateTime?
+  passwordResetVerify  Boolean   @default(false)
 }
 
 enum Role {
